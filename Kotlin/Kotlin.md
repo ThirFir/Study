@@ -345,6 +345,57 @@ Hello
 
 <br/>
 
+# **상속** #
+코틀린에서 class는 기본적으로 final 이다. 따라서 상속 가능한 클래스로 만들기 위해서는 **open** 키워드를 붙여주어야 한다. 메소드를 재정의할 경우, 필수적으로 **override** 키워드를 붙여주어야 한다.
+### **기본 형태** ###
+```
+open class Super { 
+    open fun func() { ... }
+ }
+class Child : Super() { 
+    override fun func() { ... }     
+ }
+```
+
+### **abstract class** ###
+추상 클래스를 사용할 때는 3가지 경우가 있다.
+```
+abstract class Super {
+    fun func1() { ... }         // 재정의할 수 없는 메소드
+    open fun func2() { ... }    // 재정의할 수 있는 메소드
+    abstract fun func3()        // 반드시 재정의해야 하는 메소드
+}
+class Child : Super() {
+    override fun func3() { ... }
+}
+```
+### **interface** ###
+```
+interface Super {
+    fun func() 
+}
+class Child : Super {
+
+}
+```
+
+### **여러 클래스를 상속받는 경우** ###
+자바에서 extends와 implements를 구분하여 사용하였는데, 코틀린은 이를 더 간략화하여 사용한다. 인터페이스를 상속받을 경우 클래스명만, 일반 클래스를 상속받을 경우 클래스명()을 작성한다. 여기서 ()는 부모 클래스의 생성자를 호출하는 것으로, 인자가 필요할 경우 인자를 넣어주면 된다.
+```
+interface SuperInterface { ... }
+class SuperClass(var a : Int) { ... }
+class Child : SuperInterface, SuperClass(1) { ... }
+```
+<br/>
+
+# **확장 함수** #
+**확장 함수란?**
+- 어떤 클래스의 인스턴스가 호출할 수 있는 함수를 클래스 밖에 정의하는 것.
+- fun 클래스명.함수명( ... ){ ... }
+
+
+<br/>
+
 # **const** #
 ### **val과 const val** ###
 - val : 런타임에 결정됨
@@ -379,3 +430,5 @@ fun sum(vararg num : Int) : Int {
 <br/>
 
 # **팩토리 메소드** #
+**팩토리 메소드 패턴이란**
+- ㅓ
