@@ -191,7 +191,7 @@ public class Person{            // public은 생략 가능
 val p = Person()
 ```
 
-## **기본 생성자(주 생성자)** ##
+### **기본 생성자(주 생성자)** ###
 기본 생성자(주 생성자)는 클래스명 옆에 **constructor** 키워드를 붙여 이용한다. 이때 constructor키워드는 생략 가능하다.
 ```
 class Person constructor (name : String, age : Int) {
@@ -209,7 +209,7 @@ class Person (name : String, age : Int) {
 ```
 class Person (var name : String, var age : Int) { ... }
 ```
-## **초기화 블록** ##
+### **초기화 블록** ###
 기본 생성자를 사용할 경우, 기본 생성자에는 블록이 없으므로 어떠한 코드를 포함할 수가 없다. 이때 **init**이라는 키워드를 이용하여 초기화 블록을 설정하여 내부에 코드를 작성할 수 있다.
 ```
 class Person (var name : String, var age : Int) { 
@@ -220,7 +220,7 @@ class Person (var name : String, var age : Int) {
 }
 ```
 
-## **보조 생성자(생성자 오버로딩)** ##
+### **보조 생성자(생성자 오버로딩)** ###
 기본 생성자(주 생성자) 이외에 추가적인 생성자가 필요할 경우, constructor 키워드를 사용하여 추가적인 생성자를 사용할 수 있다.
 이때 아래와 같은 방식으로 반드시 **주 생성자**를 **상속**받아야 한다.
 ```
