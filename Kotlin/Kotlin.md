@@ -181,7 +181,7 @@ var k = getMax(1, 2)
 
 # **클래스** #
 ### **기본 형태** ###
-접근 권한을 명시하지 않을 경우 기본적으로 public 접근 권한을 갖는다.
+접근 제한자를 명시하지 않을 경우 기본적으로 public 접근 제한자를 갖는다.
 ```
 public class Person{            // public은 생략 가능
     var name : String = ""
@@ -293,3 +293,89 @@ data class Person(var name : String, var age : Int)
 6. copy() : Class
 <br/>기타 등등
 
+<br/>  
+
+# **싱글톤** #
+**싱글톤(Singleton) 패턴이란 ?**
+- 객체의 인스턴스가 오직 1개만 생성되는 패턴
+
+**싱글톤 패턴의 장점**
+- 메모리의 낭비를 방지
+- 다른 클래스들 간 데이터 공유가 용이
+
+**문제점**
+- 멀티스레드 환경에서 안전하지 않음
+- 자식클래스를 가질 수 없음
+- 내부 상태를 변경하기 어려움
+
+<br/>
+
+### **코틀린에서 싱글톤** ###
+- 주 생성자, 부 생성자를 정의할 수 없음
+- 초기화하기 위해 init블록을 사용할 수 있음
+```
+object Singleton {
+    var a : Int = 0
+    init{ ... }
+    fun func() { ... }
+}
+
+...
+Singleton.func()
+```
+
+## **companion object** ##
+클래스 내부에 선언하며, companion object 블럭 내부에 속한 멤버들은 외부에서 [클래스 이름.멤버]의 형태로 호출할 수 있다. 또한 블럭 내부에서 클래스의 private 멤버에 접근할 수 있어 [팩토리 메소드](#팩토리-메소드)에 유용하다.
+```
+class CompanionClass private constructor(var msg : String) {
+    companion object {
+        fun showMessage() {
+            val cClass = CompanionClass("Hello")
+            println("${cClass.msg}")
+        }
+    }
+}
+
+...
+>>> CompanionClass.showMessage()
+```
+```
+Hello
+```
+
+<br/>
+
+# **const** #
+### **val과 const val** ###
+- val : 런타임에 결정됨
+- const val : 컴파일 시간에 결정됨, 지역 변수로 사용 불가능
+
+```
+fun add(a : Int, b : Int) : Int{
+    return a + b
+}
+
+...
+val n = add(1, 2)           // OK
+const val m = add(1, 2)     // Error
+```
+
+<br/>
+
+# **가변 인자(vararg)** #
+**가변 인자(vararg)**
+- 개수가 정해지지 않은 인자
+
+#### **사용법** ####
+```
+fun sum(vararg num : Int) : Int {
+    var result = 0
+    for(n in num)
+        result += n
+    return result
+}
+```
+
+<br/>
+
+# **팩토리 메소드** #
