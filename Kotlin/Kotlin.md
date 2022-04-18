@@ -1,3 +1,13 @@
+## 목차
+1. [변수 선언](#변수-선언)
+2. [코틀린에서의 NULL](#코틀린에서의-null)
+3. [배열과 리스트](#배열과-리스트)
+4. [반복문](#반복문)
+5. [조건문 When](#조건문-when)
+6. [함수](#함수)
+7. [클래스](#클래스)
+8. [데이터 클래스](#데이터-클래스)
+
 # **변수 선언** #
 ### **기본 형태** ###
 * 변경 가능한 변수
@@ -157,7 +167,7 @@ var a = when(value){
 ### **기본 형태** ###
 * fun 함수명(매개변수1 : 타입, 매개변수2 : 타입, ...) : 반환타입 { }
 
-반환 값이 없을 경우 반환타입은 Unit으로 명시하거나, 생략할 수 있다.
+반환 값이 없을 경우 반환타입을 Unit으로 명시하거나, 생략할 수 있다.
 ```
 fun getMax(a : Int, b : Int) : Int {
     if(a > b) return a
@@ -166,3 +176,120 @@ fun getMax(a : Int, b : Int) : Int {
 
 ...
 var k = getMax(1, 2)
+```
+<br/>
+
+# **클래스** #
+### **기본 형태** ###
+접근 권한을 명시하지 않을 경우 기본적으로 public 접근 권한을 갖는다.
+```
+public class Person{            // public은 생략 가능
+    var name : String = ""
+    var age = 0                 // 선언과 동시에 초기화 필요  
+}
+...
+val p = Person()
+```
+
+## **기본 생성자(주 생성자)** ##
+기본 생성자(주 생성자)는 클래스명 옆에 **constructor** 키워드를 붙여 이용한다. 이때 constructor키워드는 생략 가능하다.
+```
+class Person constructor (name : String, age : Int) {
+    var name = name
+    var age = age
+}
+```
+```
+class Person (name : String, age : Int) {
+    var name = name
+    var age = age
+}
+```
+내부에서의 변수 선언을 다음과 같이 한줄로 줄이는 것도 가능하다.
+```
+class Person (var name : String, var age : Int) { ... }
+```
+## **초기화 블록** ##
+기본 생성자를 사용할 경우, 기본 생성자에는 블록이 없으므로 어떠한 코드를 포함할 수가 없다. 이때 **init**이라는 키워드를 이용하여 초기화 블록을 설정하여 내부에 코드를 작성할 수 있다.
+```
+class Person (var name : String, var age : Int) { 
+    init {
+        println("Initializing block")
+        ...
+    }
+}
+```
+
+## **보조 생성자(생성자 오버로딩)** ##
+기본 생성자(주 생성자) 이외에 추가적인 생성자가 필요할 경우, constructor 키워드를 사용하여 추가적인 생성자를 사용할 수 있다.
+이때 아래와 같은 방식으로 반드시 **주 생성자**를 **상속**받아야 한다.
+```
+class Person (var name : String, var age : Int) { 
+    constructor (name : String) : this(name, 0) {
+        this.name = name
+    }
+}
+```
+<br/>
+
+constructor 키워드를 클래스명 옆에 사용하지 않고 클래스 내부에서 사용할 수 있다. 다만, 이 경우에는 주 생성자가 없는 것이다.
+```
+class Person{
+    var name : String = ""
+    var age : Int = 0
+    constructor(name : String, age : Int){
+        this.name = name
+        this.age = age
+    }
+    constructor(name){
+        this.name = name
+    }
+}
+```
+
+### **호출 순서** ###
+보조 생성자를 호출하면, 우선 상속받은 주 생성자를 먼저 호출하여 클래스를 초기화한다. 이후 보조 생성자를 실행한다.
+```
+class Person (var name : String, var age : Int) { 
+    init {
+        println("Initializing block. name : $name, age : $age")
+    }
+    constructor(name : String) : this(name, 0) {
+        println("Secondary constructor. name : $name, age : $age")
+    }
+}
+...
+val p = Person("Lee")
+```
+#### **결과** ####
+```
+Initializing block. name : Lee, age : 0
+Secondary constructor. name : Lee, age : 0
+```
+
+### **기본값(default) 설정** ###
+변수에 기본값을 설정할 수 있다.
+```
+class Person (var name : String = "default", var age : Int = "0") { ... }
+
+val p0 = Person()                           // name = "default", age = 0
+val p1 = Person("Kim")                      // name = "Kim", age = 0
+val p2 = Person("Park", 30)                 // name = "Park", age = 30
+val p3 = Person(age = 30, name = "Park")    // 매개변수의 순서를 바꾸더라도 변수명을 앞에 추가한다면 가능
+```
+<br/>
+
+# **데이터 클래스** #
+다음과 같이 클래스를 선언함으로써 별도의 메소드 생성없이 유용한 기본 메소드들을 이용할 수 있다.
+```
+data class Person(var name : String, var age : Int)
+```
+### **메소드** ###
+1. getter : Type
+2. setter
+3. equals(other) : Boolean
+4. hashCode() : Int
+5. toString() : String
+6. copy() : Class
+<br/>기타 등등
+
