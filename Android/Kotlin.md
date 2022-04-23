@@ -1,434 +1,207 @@
 ## 목차 ##
-1. [변수 선언](#변수-선언)
-2. [코틀린에서의 NULL](#코틀린에서의-null)
-3. [배열과 리스트](#배열과-리스트)
-4. [반복문](#반복문)
-5. [조건문 When](#조건문-when)
-6. [함수](#함수)
-7. [클래스](#클래스)
-8. [데이터 클래스](#데이터-클래스)
+2. [코틀린 기초](#2-코틀린-기초)
+    - 2.1 [함수와 변수](#21-함수와-변수)
+    - 2.2 [클래스와 프로퍼티](#22-클래스와-프로퍼티)
+    - 2.3 [enum과 when](#23-enum과-when)
+    - 2.4 [이터레이션](#24-이터레이션)
 
-# **변수 선언** #
-### **기본 형태** ###
-* 변경 가능한 변수
-    * var 변수이름 : 타입 = 값
-* 변경 불가능한 상수
-    * val 변수이름 : 타입 = 값
+# **2. 코틀린 기초** # 
 
-타입이 명확한 경우 타입은 생략 가능하며, 선언과 동시에 초기화를 해주어야 한다.
-```
-val v1 : Int = 1
-var v2 = 1
+## **2.1 함수와 변수** ##
 
-v1 = 2   // Compile Error.
-v2 = 2
-```
-<br/>원시 타입(Int, Boolean, Double ... )이 아닌 경우에는 **lateinit var** 키워드를 이용하여 초기화를 늦출 수 있다.
-```
-lateinit var str : String
+### **2.1.1 함수** ###
 
-str = "Hello"
 ```
+fun max(a : Int, b : Int) : Int {
+    return if (a > b) a else b
+}
+```
+- 함수의 선언에 fun 키워드를 사용한다.
+- 파라미터(매개변수) 선언부에서 파라미터 이름 : 파라미터 타입의 형식으로 작성한다.
+- 파라미터 선언 다음에 반환 타입을 명시한다.
+- 코틀린에서 if는 식(expression)이다. 이 특성을 이용하여 3항 연산자를 대체할 수 있다.
+- 이처럼 본문이 중괄호로 둘러싸인 함수를 **블록이 본문인 함수**라고 부른다.
+
 <br/>
 
-# **코틀린에서의 NULL** #
+**문(statement)과 식(expression)**
+> 식은 값을 만들어내며 다른 식의 하위 요소로 계산에 참여할 수 있다.<br/>
+> 반면 문은 자신을 둘러싸고 있는 가장 안쪽 블록의 최상위 요소로 존재하며 아무런 값을 만들어내지 않는다. <br/>
+> 자바에서는 모든 제어구조가 문인 반면 코틀린에서는 루프를 제외한 대부분의 제어 구조가 식이다.
 
+이러한 코틀린의 특성을 이용하여 위의 함수를 더 간결하게 표현할 수 있다.
+```
+fun max(a : Int, b : Int) = if (a > b) a else b
+```
+- 이러한 함수의 구조에서는 사용자가 반환 타입을 명시하지 않아도 컴파일러가 본문 식을 분석하여 식의 결과 타입을 함수 반환 타입으로 설정한다. 이러한 기능을 **타입 추론**이라 부른다.
+- 이처럼 본문이 등호와 식으로 이루어진 함수를 **식이 본문인 함수**라고 부른다.
 
-코틀린에서는 변수가 null일 수 있는지 아닌지가 중요하고, 자바에서 흔히 발생하는 **NullPointerException**을 컴파일 시간에 잡아주므로 안전성이 높다. <br/>? 키워드를 사용하여 null의 가능성을 판단하며 사용법은 다음과 같다.
+### **2.1.2 변수** ###
 
 ```
-var v1 : Int = 1     // v는 절대 null이 될 수 없음.
-v1 = null            // Compile Error.
-var v2 : Int? = 1    // 변수 v2는 null일 수도 있고 아닐 수도 있음.
-v2 = null            // OK.
-```   
+var a : Int = 10
 
-null일 가능성이 있는 어떤 클래스의 메소드를 사용할 때는 변수 뒤에 **?** 를 붙여줘야 한다.
+val b = 20
+val answer = "Hello"
+```
+- var : 변경 가능한 참조. 변수
+- val : 변경 불가능한 참조. 상수
+- 타입을 지정하지 않더라도 컴파일러가 식을 분석하여 변수 타입을 결정한다.
+- val의 경우, val이 가리키는 참조가 변하는 것이 아니라면, 내부의 값은 변경될 수 있다.
+
+## **2.2 클래스와 프로퍼티** ##
+
+### **2.2.1 프로퍼티** ###
+```
+/* 자바에서의 클래스 */
+public class Person{
+    private final string name;
+    public Person(String name) {
+        this.name = name;
+    }
+    public String getName() {
+        return name;
+    }
+}
+```
+자바에서는 데이터를 필드<small>(field)</small>에 저장하며 멤버 필드의 가시성은 private이다. 클래스는 접근자 메서드를 제공하고, getter와 setter가 이에 속한다.
+이들 필드와 접근자를 묶어 프로퍼티<small>(property)</small>라 부른다. 코틀린은 이 프로퍼티를 언어 기본 기능으로 제공하며, 자바의 필드와 접근자 메서드를 완전히 대신한다.
 
 ```
-var name_not_null : String = "Lee"
-var name_can_null : String? = null
-
-var name1 : String = name_not_null.uppercase()   // OK.
-var name2 : String = name_can_null.uppercase()   // Compile Error.
-var name3 : String = name_can_null?.uppercase()   // Compile Error.
-var name4 : String? = name_can_null?.uppercase()  // OK.  name_can_null이 null 이면 null반환.
+/* 코틀린 */
+class Person {
+    val name : String           // 읽기 전용 프로퍼티
+                                // 코틀린은 비공개 필드와 getter를 만들어냄
+    var isMarried : Boolean     // 쓸 수 있는 프로퍼티
+                                // 코틀린은 비공개 필드, getter, setter를 만들어냄
+}
 ```
+Person에는 비공개 필드가 들어있고, 생성자가 그 필드를 초기화하며, 게터를 통해 그 비공개 필드에 접근한다.
+```
+val person = Person("Bob", true)    // new 키워드를 사용하지 않고 생성자를 호출
+println(person.name)    // 자바에서와 달리 getName()을 호출하지 않고, name을 직접
+                        // 호출해도 코틀린이 자동으로 게터를 호출해준다.
+person.isMarried = false // 자바의 setMarried(false)와 동일
+println(person.isMarried)
+```
+> Bob  
+> false
 
-어떤 변수가 해당 위치에서 반드시 null이 아님을 확신할 수 있으면 **!!** 키워드를 사용할 수도 있다. 하지만 이는 **런타임 에러**를 발생시킬 수 있다.
+### **2.2.2 커스텀 접근자** ###
 
 ```
-var name1 : String? = "Lee"
-var name2 : String = name1!!.uppercase()
+// 직사각형 클래스
+class Rectangle(val height : Int, val width : Int) {
+    val isSquare : Boolean
+        get() { return height == width }
+}
 ```
-<br/>
+어떤 직사각형이 정사각형인지 별도의 필드에 저장하지 않고도, 프로퍼티 게터 get()을 이용해 사각형의 너비와 높이가 같은지 검사하면 정사각형 여부를 그때그때 알 수 있다.
+프로퍼티에 접근할 때마다 게터가 프로퍼티 값을 매번 다시 계산한다.
+이때 get() = height == width 로 작성할 수도 있다.
 
-# **배열과 리스트** #
-1. **Array**
-    * 값의 변경이 용이하나 크기가 고정된다.
-    * 연속적인 메모리 공간에 저장된다.
-2. **List**
-    * 값의 변경(+ 삽입, 삭제)이 불가능하다.
-    * 불연속적인 메모리 공간에 저장된다.
-3. **arrayList**
-    * 값의 변경이 가능한 List.
-4. **MutableList**
-    * arrayList와 기능은 동일하나 형태만 다르다.
-
-선언 시에는 val 또는 var 키워드를 사용할 수 있다. 두 방식 모두(List형이 아닐 경우) 내부 값의 변경은 가능하나, val 키워드를 사용 시에는 해당 변수가 가리키는 곳(참조 값)을 변경할 수는 없다.
+## **2.3 enum과 when** ##
+### **2.3.1 num 클래스** ###
 ```
-val array : Array<Int> = arrayOf(1,2,3)
-val list : List<Int> = listOf(1,2,3)
-
-array[0] = 5        // OK.
-list[0] = 5         // 변경 불가능. Compile Error.
-
-val arrayList = arrayListOf<Int>()
-
-arrayList.add(10)
-arrayList.add(20)
-arrayList.remove(0)
+enum class Color {
+    RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET
+}
 ```
-변수 타입에 Any를 사용할 경우 여러 타입의 값을 저장할 수 있다.
+자바와 마찬가지로, enum 클래스 안에 프로퍼티나 메서드를 정의할 수 있다.
 ```
-val array : Array<Any> = arrayOf(1, "HI", 3.14)
-val array2 = arrayOf(2, "Hello", 9.81)      // 생략도 가능
+enum class Color (
+    val r : Int, val g : Int, val b : Int   // 상수의 프로퍼티 정의
+ ) {
+    RED(255,0,0), ORANGE(255, 165, 0),  /* 각 상수를 생성할 때 그에 대한
+                                           프로퍼티 값을 지정함 */
+    ...
+    VIOLET(238, 130, 238);      // 반드시 세미콜론을 붙여야 함
+    
+    fun rgb() = (r * 256 + g) * 256 + b     // 메서드 정의
+}
+println(Color.BLUE.rgb())
 ```
-<br/>
+> 255
 
-# **반복문** #
-### **기본 형태** ###
-* for(변수이름 in range)
-    * 변수의 타입은 제시하지 않아도 된다.
-* while(조건문)
-    * 다른 언어와 사용법 동일
-
--기본적인 사용법
+### **2.3.2 when** ###
 ```
-for(v in 1..10)         // 10 포함 X
-    println(v)          // 1 2 3 ... 8 9
-for(v in 1 until 10)    // 10도 포함
-    println(v)          // 1 2 3 ... 9 10
-for(v in 1..10 step 2)  
-    println(v)          // 1 3 5 7 9
-for(v in 10 downTo 1)
-    println(v)          // 10 9 8 7 ... 1
-```
-
-for 문을 이용하여 배열 또는 리스트에 모든 인덱스를 방문할 수 있다.
-```
-val arrayList = arrayListOf(1,2,3,4,5,6,7,8,9,10)
-
-for(v in arrayList)
-    println(v)      // 1 2 3 ... 9 10
-```
-
-배열/리스트의 **withIndex()** 메소드를 이용하여 반복문에서 인덱스와 해당하는 값을 모두 이용할 수 있다.
-```
-val arrayList = arrayListOf(1,2,3,4,5,6,7,8,9,10)
-
-for((index, v) in values.withIndex())
-    println("arrayList[${index}] = ${v}")   // arrayList[0] = 1 arrayList[1] = 2 ...
-```
-<br/>
-
-# **조건문 When** #
-다른 언어의 switch문과 동일한 동작을 하는 키워드로, 형태가 간단하게 바뀌었다.
-### **기본 형태** ###
-```
-* when(어떤 변수){
+when(어떤 변수){
     케이스1 -> {동작}
     케이스2 -> {동작}
     ...
     else -> {동작}
 }
 ```
+if와 마찬가지로 when도 값을 만들어내는 **식**이다. 따라서 식이 본문인 함수에 when을 바로 사용할 수 있다.
 ```
-var value = getValue();
-
-when(value){
-    0 -> {println(0)}
-    1,2,3 -> {println(1~3)}
-    in 4..10 -> {println(4~10)}
-    else -> {println(11~)}
-}
-```
-다음의 형태로도 사용 가능하다. 이때 else는 반드시 포함되어야 한다.
-```
-var a = when(value){
-    1 -> 10
-    2 -> 20
-    else -> 30      // else가 반드시 포함되어야 함.
-}
-```
-<br/>
-
-# **함수** #
-### **기본 형태** ###
-* fun 함수명(매개변수1 : 타입, 매개변수2 : 타입, ...) : 반환타입 { }
-
-반환 값이 없을 경우 반환타입을 Unit으로 명시하거나, 생략할 수 있다.
-```
-fun getMax(a : Int, b : Int) : Int {
-    if(a > b) return a
-    else return b
-}
-
-...
-var k = getMax(1, 2)
-```
-<br/>
-
-# **클래스** #
-### **기본 형태** ###
-접근 제한자를 명시하지 않을 경우 기본적으로 public 접근 제한자를 갖는다.
-```
-public class Person{            // public은 생략 가능
-    var name : String = ""
-    var age = 0                 // 선언과 동시에 초기화 필요  
-}
-...
-val p = Person()
-```
-
-### **기본 생성자(주 생성자)** ###
-기본 생성자(주 생성자)는 클래스명 옆에 **constructor** 키워드를 붙여 이용한다. 이때 constructor키워드는 생략 가능하다.
-```
-class Person constructor (name : String, age : Int) {
-    var name = name
-    var age = age
-}
-```
-```
-class Person (name : String, age : Int) {
-    var name = name
-    var age = age
-}
-```
-내부에서의 변수 선언을 다음과 같이 한줄로 줄이는 것도 가능하다.
-```
-class Person (var name : String, var age : Int) { ... }
-```
-### **초기화 블록** ###
-기본 생성자를 사용할 경우, 기본 생성자에는 블록이 없으므로 어떠한 코드를 포함할 수가 없다. 이때 **init**이라는 키워드를 이용하여 초기화 블록을 설정하여 내부에 코드를 작성할 수 있다.
-```
-class Person (var name : String, var age : Int) { 
-    init {
-        println("Initializing block")
+fun getResult(a : Int) =
+    when (a) {
+        1 -> "one"
+        2 -> "two"
         ...
+        else -> "null"
     }
-}
 ```
-
-### **보조 생성자(생성자 오버로딩)** ###
-기본 생성자(주 생성자) 이외에 추가적인 생성자가 필요할 경우, constructor 키워드를 사용하여 추가적인 생성자를 사용할 수 있다.
-이때 아래와 같은 방식으로 반드시 **주 생성자**를 **상속**받아야 한다.
+### **2.3.3 when과 임의의 객체를 함께 사용** ###
 ```
-class Person (var name : String, var age : Int) { 
-    constructor (name : String) : this(name, 0) {
-        this.name = name
+fun mix(c1 : Color, c2 : Color) =
+    when (setOf(c1, c2)) {
+        setOf(RED, YELLOW) -> ORANGE
+        setOf(YELLOW, BLUE) -> GREEN
+        setOf(BLUE, VIOLET) -> INDIGO
+        else -> throw Exception("Dirty color")
     }
-}
 ```
-<br/>
-
-constructor 키워드를 클래스명 옆에 사용하지 않고 클래스 내부에서 사용할 수 있다. 다만, 이 경우에는 주 생성자가 없는 것이다.
+### **2.3.4 인자 없는 when 사용** ###
+위 함수는 호출될 때마다 여러 Set 인스턴스를 생성하므로 비효율적이다. 이때 다음과 같이 인자가 없는 when 식을 사용하면 불필요한 객체 생성을 막을 수 있다. 다만 가독성에 저하가 있다.
 ```
-class Person{
-    var name : String = ""
-    var age : Int = 0
-    constructor(name : String, age : Int){
-        this.name = name
-        this.age = age
+fun mixOptimized(c1 : Color, c2 : Color) =
+    when {
+        (c1 == RED && c2 == YELLOW) ||
+        (c1 == YELLOW && c2 == RED) -> ORANGE
+        ...
+        else -> throw Exception("Dirty color")
     }
-    constructor(name){
-        this.name = name
+```
+### **2.3.5 스마트 캐스트** ###
+코틀린에서는 is를 사용해 변수의 타입을 검사할 수 있다. 이는 자바의 instanceof와 비슷하다. 하지만 자바에서 어떤 변수의 타입을 instanceof로 확인한 이후 그 타입에 속한 멤버에 접근하기 위해서는 명시적으로 변수타입을 캐스팅해야 한다.  
+코틀린에서는 is로 타입을 검사한 후에는 이러한 명시적 캐스팅없이 컴파일러가 알아서 캐스팅을 수행해주는데, 이를 **스마트 캐스트**라 칭한다. (단, 검사한 다음에 그 값이 바뀔 수 없는 경우에만 작동함)
+```
+if(e is Person)
+    return e.name
+```
+코틀린에서 값을 캐스팅할 때는 as 키워드를 사용한다.
+```
+val a = 1
+val b = a as Float
+```
+### **if와 when의 분기에서 블록 사용** ###
+if나 when 모두 분기에 블록을 사용할 수 있고, 그런 경우에 블록 마지막 문장이 블록 전체의 결과가 된다.
+fun function() =
+    if(...){
+        println("1")
+        1
     }
-}
-```
-
-### **호출 순서** ###
-보조 생성자를 호출하면, 우선 상속받은 주 생성자를 먼저 호출하여 클래스를 초기화한다. 이후 보조 생성자를 실행한다.
-```
-class Person (var name : String, var age : Int) { 
-    init {
-        println("Initializing block. name : $name, age : $age")
+    else if(...){
+        println("2")
+        2
     }
-    constructor(name : String) : this(name, 0) {
-        println("Secondary constructor. name : $name, age : $age")
-    }
-}
-...
-val p = Person("Lee")
+    else -1
+    
+## **2.4 이터레이션 : while, for** ##
+### **2.4.1 while 루프** ###
+자바와 동일한 문법을 사용한다.  
+
+### **2.4.2 수에 대한 이터레이션** ###
+코틀린에서는 for문에 범위를 이용한다. 코틀린에서의 범위는 닫힌 구간(양끝을 포함)이다.
 ```
-#### **결과** ####
-```
-Initializing block. name : Lee, age : 0
-Secondary constructor. name : Lee, age : 0
-```
+for(i in 1..10)
+    println("$i")   // >>> 1 2 3 ... 10
+for(i in 10 downTo 1 step 2)
+    println("$i")   // >>> 10 8 6 4 2
 
-### **기본값(default) 설정** ###
-변수에 기본값을 설정할 수 있다.
-```
-class Person (var name : String = "default", var age : Int = "0") { ... }
-
-val p0 = Person()                           // name = "default", age = 0
-val p1 = Person("Kim")                      // name = "Kim", age = 0
-val p2 = Person("Park", 30)                 // name = "Park", age = 30
-val p3 = Person(age = 30, name = "Park")    // 매개변수의 순서를 바꾸더라도 변수명을 앞에 추가한다면 가능
-```
-<br/>
-
-# **데이터 클래스** #
-다음과 같이 클래스를 선언함으로써 별도의 메소드 생성없이 유용한 기본 메소드들을 이용할 수 있다.
-```
-data class Person(var name : String, var age : Int)
-```
-### **메소드** ###
-1. getter : Type
-2. setter
-3. equals(other) : Boolean
-4. hashCode() : Int
-5. toString() : String
-6. copy() : Class
-<br/>기타 등등
-
-<br/>  
-
-# **싱글톤** #
-**싱글톤(Singleton) 패턴이란 ?**
-- 객체의 인스턴스가 오직 1개만 생성되는 패턴
-
-**싱글톤 패턴의 장점**
-- 메모리의 낭비를 방지
-- 다른 클래스들 간 데이터 공유가 용이
-
-**문제점**
-- 멀티스레드 환경에서 안전하지 않음
-- 자식클래스를 가질 수 없음
-- 내부 상태를 변경하기 어려움
-
-<br/>
-
-### **코틀린에서 싱글톤** ###
-- 주 생성자, 부 생성자를 정의할 수 없음
-- 초기화하기 위해 init블록을 사용할 수 있음
-```
-object Singleton {
-    var a : Int = 0
-    init{ ... }
-    fun func() { ... }
-}
-
-...
-Singleton.func()
 ```
 
-## **companion object** ##
-클래스 내부에 선언하며, companion object 블럭 내부에 속한 멤버들은 외부에서 [클래스 이름.멤버]의 형태로 호출할 수 있다. 또한 블럭 내부에서 클래스의 private 멤버에 접근할 수 있어 [팩토리 메소드](#팩토리-메소드)에 유용하다.
-```
-class CompanionClass private constructor(var msg : String) {
-    companion object {
-        fun showMessage() {
-            val cClass = CompanionClass("Hello")
-            println("${cClass.msg}")
-        }
-    }
-}
-
-...
->>> CompanionClass.showMessage()
-```
-```
-Hello
-```
-
-<br/>
-
-# **상속** #
-코틀린에서 class는 기본적으로 final 이다. 따라서 상속 가능한 클래스로 만들기 위해서는 **open** 키워드를 붙여주어야 한다. 메소드를 재정의할 경우, 필수적으로 **override** 키워드를 붙여주어야 한다.
-### **기본 형태** ###
-```
-open class Super { 
-    open fun func() { ... }
- }
-class Child : Super() { 
-    override fun func() { ... }     
- }
-```
-
-### **abstract class** ###
-추상 클래스를 사용할 때는 3가지 경우가 있다.
-```
-abstract class Super {
-    fun func1() { ... }         // 재정의할 수 없는 메소드
-    open fun func2() { ... }    // 재정의할 수 있는 메소드
-    abstract fun func3()        // 반드시 재정의해야 하는 메소드
-}
-class Child : Super() {
-    override fun func3() { ... }
-}
-```
-### **interface** ###
-```
-interface Super {
-    fun func() 
-}
-class Child : Super {
-
-}
-```
-
-### **여러 클래스를 상속받는 경우** ###
-자바에서 extends와 implements를 구분하여 사용하였는데, 코틀린은 이를 더 간략화하여 사용한다. 인터페이스를 상속받을 경우 클래스명만, 일반 클래스를 상속받을 경우 클래스명()을 작성한다. 여기서 ()는 부모 클래스의 생성자를 호출하는 것으로, 인자가 필요할 경우 인자를 넣어주면 된다.
-```
-interface SuperInterface { ... }
-class SuperClass(var a : Int) { ... }
-class Child : SuperInterface, SuperClass(1) { ... }
-```
-<br/>
-
-# **확장 함수** #
-**확장 함수란?**
-- 어떤 클래스의 인스턴스가 호출할 수 있는 함수를 클래스 밖에 정의하는 것.
-- fun 클래스명.함수명( ... ){ ... }
 
 
-<br/>
 
-# **const** #
-### **val과 const val** ###
-- val : 런타임에 결정됨
-- const val : 컴파일 시간에 결정됨, 지역 변수로 사용 불가능
-
-```
-fun add(a : Int, b : Int) : Int{
-    return a + b
-}
-
-...
-val n = add(1, 2)           // OK
-const val m = add(1, 2)     // Error
-```
-
-<br/>
-
-# **가변 인자(vararg)** #
-**가변 인자(vararg)**
-- 개수가 정해지지 않은 인자
-
-#### **사용법** ####
-```
-fun sum(vararg num : Int) : Int {
-    var result = 0
-    for(n in num)
-        result += n
-    return result
-}
-```
-
-<br/>
-
-# **팩토리 메소드** #
-**팩토리 메소드 패턴이란**
-- ㅓ
