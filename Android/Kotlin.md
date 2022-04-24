@@ -1,9 +1,15 @@
 ## 목차 ##
-2. [코틀린 기초](#2-코틀린-기초)
-    - 2.1 [함수와 변수](#21-함수와-변수)
-    - 2.2 [클래스와 프로퍼티](#22-클래스와-프로퍼티)
-    - 2.3 [enum과 when](#23-enum과-when)
-    - 2.4 [이터레이션](#24-이터레이션)
+- [2. 코틀린 기초](#2-코틀린-기초)
+    - [2.1 함수와 변수](#21-함수와-변수)
+    - [2.2 클래스와 프로퍼티](#22-클래스와-프로퍼티)
+    - [2.3 enum과 when](#23-enum과-when)
+    - [2.4 이터레이션](#24-이터레이션)
+    - [2.5 예외 처리](#25-예외-처리)
+- [3. 함수 정의와 호출](#3-함수-정의와-호출)
+    - [3.1 코틀린의 컬렉션](#31-코틀린의-컬렉션)
+    - [3.2 확장 함수와 확장 프로퍼티](#32-확장-함수와-확장-프로퍼티)
+    - [3.3](#3-)
+<br/>
 
 # **2. 코틀린 기초** # 
 
@@ -202,6 +208,157 @@ for(i in 10 downTo 1 step 2)
 
 ```
 
+### **2.4.3 컬렉션에서 이터레이션** ###
 
+.withIndex()를 사용하여 인덱스를 같이 얻을 수 있다.
+```
+var list = arrayListOf("10","11","1001")
+for((index, element) in list.withIndex())
+    println("$index : $element")
+```
+> 0 : 10  
+> 1 : 11  
+> 2 : 1001
 
+### **2.4.4 연산자 in** ###
+in 연산자로 어떤 값이 범위에 속하는지 검사할 수 있다. !in도 가능하다.
+```
+if(a in 1..10)  // a가 1 ~ 10에 있는 값인지
+```
+또한, Comparable 인터페이스를 구현한 클래스에도 in 연산자를 사용할 수 있다.
 
+## **2.5 예외 처리** ##
+다른 클래스처럼 new를 붙이지 않는다.
+```
+if( ... ) 
+    throw IllegalArgumentException(" ... ")
+```
+
+또한 코틀린의 throw는 식이므로 다른 식에 포함될 수 있다.
+```
+val percent = 
+    if (n in 0..100) number
+    else throw IllegalArgumentException(" ... ")    // 이때는 변수가 초기화되지 않는다.
+```
+
+### **2.5.1 try, catch, finally** ###
+코틀린은 체크 예외<small>*(RuntimeException을 상속하지 않는 Exception클래스)*</small>와 언체크 예외<small>*(RuntimeException을 상속하는 Exception클래스)*</small>를 구분하지 않는다. 그래서 함수가 던지는 예외를 지정하지 않고 발생한 예외를 잡아도 되고 잡지 않아도 된다.
+```
+fun readNumber(read : BufferedReader) : Int? {  // 함수가 던질 수 있는 예외를 명시할 필요가 없음
+    try {
+        val line = read.readLine()
+        return Integer.parseInt(line)
+    }
+    catch(e : NumberFormatException) {
+        return null
+    }
+    finally{
+        reader.close()
+    }
+}
+```
+
+### **2.5.2 try를 식으로 사용** ###
+역시 블록의 마지막 식이 값의 전체 값이 된다.
+```
+val n = try {
+    ...
+    1
+} catch (e : NumberFormatException) {
+    -1
+}
+```
+<br/>
+
+# **3. 함수 정의와 호출** #
+
+## **3.1 코틀린의 컬렉션** ##
+코틀린은 자체 컬렉션을 제공하지 않는다. 표준 자바 컬렉션을 활용함으로써 자바 코드와 상호작용하기가 더 쉽기 때문이다.
+하지만 코틀린에서는 자바에서보다 더 많은 기능을 쓸 수 있다.
+
+## **3.2 확장 함수와 확장 프로퍼티** ##
+**확장 함수**란 어떤 클래스의 멤버 메서드인 것처럼 호출할 수 있지만 그 클래스의 밖에 선언된 함수를 말한다.
+```
+package strings
+fun String.lastChar() : Char = this.get(this.length - 1)    // 문자열의 마지막 문자를 반환, this 생략 가능
+
+println("Kotlin".lastChar())
+```
+> n
+
+이처럼 원하는 메서드를 클래스에 새로이 추가할 수 있다.  
+여기서 클래스 이름(String)을 **수신 객체 타입**, 확장 함수가 호출되는 대상이 되는 값(this)을 **수신 객체**라고 부른다.  
+
+확장 함수 내부에서는 수신 객체의 메서드나 프로퍼티를 바로 사용할 수 있다. 단, private이나 protected 멤버를 사용할 수는 없다. 따라서 확장 함수가 캡슐화를 깨지는 않는다고 볼 수 있다.
+
+### **3.2.1 임포트** ###
+확장 함수를 정의하였더라도 모든 소스코드에서 그 함수를 사용할 수 있는 것은 아니다. 확장 함수를 사용하기 위해서는 그 함수를 임포트해주어야 한다.
+```
+import strings.lastChar
+또는
+import strings.*
+```
+as 키워드를 사용하여 다른 이름으로 부를 수도 있다.
+```
+import strings.lastChar as last
+val c = "Kotlin".last()
+```
+
+### **3.2.2 확장 함수의 오버라이드** ###
+확장 함수는 정적<small>*(컴파일 시점)*</small> 메서드이므로 오버라이드할 수 없다.
+```
+open class View {
+    open fun click() = println("View")
+}
+class Button : View {
+    override fun click() = println("Button")
+}
+...
+val view : View = Button()
+view.click()
+```
+> Button
+
+### **3.2.3 확장 프로퍼티** ###
+확장 함수와 비슷하다. 확장 프로퍼티는 상태를 저장할 적절한 방법이 없기에<small>*(기존 클래스의 인스턴스 객체에 필드를 추가할 수 없음)*</small> 실제로는 아무 상태도 가질 수 없다. 하지만 프로퍼티 문법(get())으로 더 짧게 코드를 작성할 수 있어 편한 경우가 있다.
+```
+val String.lastChar : Char
+    get() = get(length - 1)
+```
+뒷받침하는 필드가 없으므로 게터를 반드시 정의해야 한다.
+var를 사용한다면 set()도 정의해야 한다.
+
+## **3.3 컬렉션 처리** ##
+
+### **3.3.1 가변 인자 함수** ###
+vararg 키워드를 이용하여 임의 개수의 인자를 전달받는다.
+```
+fun listOf<T>(vararg values : T) : List<T> { ... }
+```
+또한 코틀린에서 가변 인자 함수를 호출할 때 배열을 그냥 넘기는 자바와 달리, 배열을 풀어서 각 원소들을 넘겨주어야 하는데, 이때 사용하는 것이 <strong>스프레드 연산자(*)</strong>이다.
+```
+fun sum(vararg ns : Int) : Int { ... }
+...
+val numbers = intArrayOf(1, 2, 3, 4)
+val s = sum(*numbers)
+```
+
+### **3.3.2 중위 호출, 구조 분해 선언** ###
+인자가 하나뿐인 일반 메서드나 확장 함수에 **중위 호출**을 사용할 수 있다. 구조는 다음과 같다.
+```
+1.to("one")     // 일반적인 방식
+1 to "one"      // 중위 호출
+```
+중위 호출이 가능한 메서드를 선언할 때는 infix 변경자를 함수 선언 앞에 붙여준다.
+```
+infix fun Any.to(other : Any) = Pair(this, other)
+```
+여기서 to 함수는 Pair의 인스턴스를 반환한다. 이를 이용하여 다음과 같이 Pair의 두 변수를 즉시 초기화할 수 있다.
+```
+val (number, name) = 1 to "one"
+```
+이런 기능을 **구조 분해 선언**이라 부른다.
+
+참고로 to함수는 실제로는 제네릭 함수이다.
+
+## **3.4 문자열과 정규식 다루기** ##
